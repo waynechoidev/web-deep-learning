@@ -20,9 +20,14 @@ export const featureDescriptions = [
   "% lower status of the population", // LSTAT
   "Median value of owner-occupied homes in $1000's", // MEDV
 ];
+
 export type DatasetType = {
   trainFeatures: number[][];
   trainTarget: number[][];
   testFeatures: number[][];
   testTarget: number[][];
 };
+
+export enum ModelType {
+  LinearRegressionModel = 1,
+}

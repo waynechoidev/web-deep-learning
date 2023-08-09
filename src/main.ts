@@ -1,3 +1,4 @@
+import { ModelType } from "./boston-housing/constant";
 import { BostonHousingDataset } from "./boston-housing/dataset";
 import { Tensor } from "./boston-housing/tensor";
 import "./style.css";
@@ -20,7 +21,7 @@ document.addEventListener(
     const learningRate = 0.001;
     const numEpochs = 200;
     const linearRegressionModel = tensors.trainModel(
-      tensors.linearRegressionModel,
+      ModelType.LinearRegressionModel,
       numEpochs,
       learningRate
     );

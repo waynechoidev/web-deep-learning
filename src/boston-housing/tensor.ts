@@ -1,4 +1,4 @@
-import { DatasetType } from "./constant";
+import { DatasetType, ModelType } from "./constant";
 
 export class Tensor {
   private _trainFeatures: number[][] = [[]];
@@ -59,15 +59,12 @@ export class Tensor {
   }
 
   trainModel(
-    model: (
-      features: number[],
-      weights: number[],
-      bias: number,
-      numFeatures: number
-    ) => number,
+    modelType: ModelType,
     numEpochs: number,
     learningRate: number
   ): { weights: number[]; bias: number } {
+    const model = this.getModel(modelType);
+
     for (let epoch = 0; epoch < numEpochs; epoch++) {
       let totalLoss = 0;
 
@@ -95,7 +92,8 @@ export class Tensor {
     return { weights: this._weights, bias: this._bias };
   }
 
-  linearRegressionModel(
+  // Models
+  private _linearRegressionModel(
     features: number[],
     weights: number[],
     bias: number,
@@ -111,6 +109,13 @@ export class Tensor {
   // Private methods
   private get _numFeatures() {
     return this._trainFeatures[0].length;
+  }
+
+  private getModel(type: ModelType) {
+    switch (type) {
+      case ModelType.LinearRegressionModel:
+        return this._linearRegressionModel;
+    }
   }
 
   private determineMeanAndStddev(data: number[][]): {

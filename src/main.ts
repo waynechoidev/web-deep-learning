@@ -7,7 +7,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML =
   "<div>Hello Deep Learning</div>";
 
 const data = new BostonHousingDataset();
-const tensors = new Tensor();
+const tensors = new Tensor(ModelType.LinearRegressionModel);
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -19,13 +19,10 @@ document.addEventListener(
     console.log(tensors.trainFeatures);
     console.log(tensors.baseline);
     const learningRate = 0.001;
-    const numEpochs = 200;
-    const linearRegressionModel = tensors.trainModel(
-      ModelType.LinearRegressionModel,
-      numEpochs,
-      learningRate
-    );
+    const numEpochs = 500;
+    const linearRegressionModel = tensors.trainModel(numEpochs, learningRate);
     console.log(linearRegressionModel);
+    tensors.testModel();
   },
   false
 );

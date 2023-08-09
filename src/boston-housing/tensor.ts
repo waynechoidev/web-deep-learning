@@ -1,6 +1,8 @@
 import { DatasetType, ModelType } from "./constant";
 
 export class Tensor {
+  private _modelType: ModelType;
+
   private _trainFeatures: number[][] = [[]];
   private _trainTarget: number[][] = [[]];
   private _testFeatures: number[][] = [[]];
@@ -8,7 +10,9 @@ export class Tensor {
 
   private _weights: number[] = [];
   private _bias = 0;
-  constructor() {}
+  constructor(modelType: ModelType) {
+    this._modelType = modelType;
+  }
 
   init(dataset: DatasetType) {
     const rawTrainFeatures = dataset.trainFeatures;
@@ -59,11 +63,10 @@ export class Tensor {
   }
 
   public trainModel(
-    modelType: ModelType,
     numEpochs: number,
     learningRate: number
   ): { weights: number[]; bias: number } {
-    const model = this.getModel(modelType);
+    const model = this.getModel(this._modelType);
 
     for (let epoch = 0; epoch < numEpochs; epoch++) {
       const predictions = this.feedForward(
@@ -85,6 +88,29 @@ export class Tensor {
     }
 
     return { weights: this._weights, bias: this._bias };
+  }
+
+  public testModel() {
+    const model = this.getModel(this._modelType);
+
+    const testPredictions = this.feedForward(
+      model,
+      this._testFeatures,
+      this._weights,
+      this._bias
+    );
+
+    let totalLoss = 0; // Initialize total loss
+
+    testPredictions.forEach((pred, index) => {
+      const target = this._testTarget[index][0];
+      const loss = Math.pow(target - pred, 2); // Calculate loss for each prediction
+      totalLoss += loss; // Accumulate the losses
+      // console.log(`Target: ${target}, Pred: ${pred}, Loss: ${loss}`);
+    });
+
+    const meanLoss = totalLoss / testPredictions.length; // Calculate mean loss
+    console.log(`Mean Test Loss: ${meanLoss}`);
   }
 
   // Models

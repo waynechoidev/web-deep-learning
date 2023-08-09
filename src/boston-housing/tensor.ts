@@ -9,10 +9,15 @@ export class Tensor {
   private _testTarget: number[][] = [[]];
 
   private _weights: number[] = [];
+  private _hiddenActivations: number[] = [];
   private _bias = 0;
+
   constructor(modelType: ModelType) {
     this._modelType = modelType;
+    this._hiddenActivations = new Array(this.HIDDEN_UNITS).fill(0);
   }
+
+  private HIDDEN_UNITS = 50 as const;
 
   init(dataset: DatasetType) {
     const rawTrainFeatures = dataset.trainFeatures;
@@ -34,7 +39,7 @@ export class Tensor {
     );
     this._testTarget = dataset.testTarget;
 
-    this._weights = new Array(this._numFeatures)
+    this._weights = new Array(this._numFeatures + this.HIDDEN_UNITS)
       .fill(0)
       .map(() => Math.random());
   }
@@ -114,18 +119,42 @@ export class Tensor {
   }
 
   // Models
-  private _linearRegressionModel(
+  private _linearRegressionModel = (
     features: number[],
     weights: number[],
     bias: number,
     numFeatures: number
-  ): number {
+  ): number => {
     let prediction = bias;
     for (let j = 0; j < numFeatures; j++) {
       prediction += weights[j] * features[j];
     }
     return prediction;
-  }
+  };
+
+  private _multiLayerPerceptronModel = (
+    features: number[],
+    weights: number[],
+    bias: number,
+    numFeatures: number
+  ): number => {
+    // Calculate hidden layer activations
+    for (let i = 0; i < this.HIDDEN_UNITS; i++) {
+      let activation = bias;
+      for (let j = 0; j < numFeatures; j++) {
+        activation += weights[j] * features[j];
+      }
+      this._hiddenActivations[i] = this.sigmoid(activation);
+    }
+
+    // Calculate output
+    let output = 0;
+    for (let i = 0; i < this.HIDDEN_UNITS; i++) {
+      output += this._hiddenActivations[i] * weights[this._numFeatures + i];
+    }
+
+    return output;
+  };
 
   // Private methods
   private get _numFeatures() {
@@ -136,6 +165,8 @@ export class Tensor {
     switch (type) {
       case ModelType.LinearRegressionModel:
         return this._linearRegressionModel;
+      case ModelType.MultiLayerPerceptronModel:
+        return this._multiLayerPerceptronModel;
     }
   }
 
@@ -243,13 +274,23 @@ export class Tensor {
     for (let i = 0; i < features.length; i++) {
       const error = target[i][0] - predictions[i];
 
-      for (let j = 0; j < newWeights.length; j++) {
+      for (let j = 0; j < this._numFeatures; j++) {
         newWeights[j] += learningRate * error * features[i][j];
       }
       newBias += learningRate * error;
+
+      for (let k = 0; k < this.HIDDEN_UNITS; k++) {
+        const hiddenError = error * newWeights[this._numFeatures + k];
+        const delta = hiddenError * this._hiddenActivations[k];
+        newWeights[this._numFeatures + k] += learningRate * delta;
+      }
     }
 
     this._weights = newWeights;
     this._bias = newBias;
+  }
+
+  private sigmoid(x: number): number {
+    return 1 / (1 + Math.exp(-x));
   }
 }

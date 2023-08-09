@@ -13,8 +13,10 @@ document.addEventListener(
   async () => {
     await data.loadData();
     tensors.init(data.dataset);
+
     console.log(data.dataset.trainFeatures);
     console.log(tensors.trainFeatures);
+    console.log(tensors.baseline);
   },
   false
 );

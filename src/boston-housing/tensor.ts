@@ -1,6 +1,11 @@
 import { DatasetType } from "./constant";
 
 export class Tensor {
+  private _trainFeatures?: number[][];
+  private _trainTarget?: number[][];
+  private _testFeatures?: number[][];
+  private _testTarget?: number[][];
+
   constructor() {}
 
   init(dataset: DatasetType) {
@@ -37,11 +42,17 @@ export class Tensor {
     return this._testTarget ?? [];
   }
 
-  private _trainFeatures?: number[][];
-  private _trainTarget?: number[][];
-  private _testFeatures?: number[][];
-  private _testTarget?: number[][];
+  get baseline() {
+    const avgPrice = this.mean(this._trainTarget ?? []);
 
+    const diff = this.sub(this._testTarget ?? [], avgPrice);
+    const squaredDiff = this.square(diff);
+    const baseline = this.mean(squaredDiff);
+
+    return baseline;
+  }
+
+  // Private methods
   private determineMeanAndStddev(data: number[][]): {
     dataMean: number[];
     dataStd: number[];
@@ -92,5 +103,18 @@ export class Tensor {
     }
 
     return normalizedTensor;
+  }
+
+  private mean(data: number[][]): number {
+    const sum = data.flat().reduce((acc, val) => acc + val, 0);
+    return sum / (data.length * data[0].length);
+  }
+
+  private sub(data: number[][], value: number): number[][] {
+    return data.map((row) => row.map((val) => val - value));
+  }
+
+  private square(data: number[][]): number[][] {
+    return data.map((row) => row.map((val) => val * val));
   }
 }

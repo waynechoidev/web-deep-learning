@@ -76,10 +76,11 @@ export class Tensor {
           this._numFeatures
         );
         const error = this._trainTarget[i][0] - prediction;
-
+        const newWeights = [...this._weights];
         for (let j = 0; j < this._numFeatures; j++) {
-          this._weights[j] += learningRate * error * this._trainFeatures[i][j];
+          newWeights[j] += learningRate * error * this._trainFeatures[i][j];
         }
+        this._weights = newWeights;
         this._bias += learningRate * error;
 
         totalLoss += error ** 2;

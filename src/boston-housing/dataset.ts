@@ -9,6 +9,11 @@ import {
 } from "./constant";
 
 export class BostonHousingDataset {
+  private _trainFeatures?: number[][];
+  private _trainTarget?: number[][];
+  private _testFeatures?: number[][];
+  private _testTarget?: number[][];
+
   constructor() {}
 
   async loadData() {
@@ -30,10 +35,6 @@ export class BostonHousingDataset {
     console.log(`----- parsing has done -----`);
   }
 
-  get numTrainFeatures() {
-    return this._trainFeatures?.[0].length ?? 0;
-  }
-
   get dataset(): DatasetType {
     return {
       trainFeatures: this._trainFeatures ?? [],
@@ -43,11 +44,11 @@ export class BostonHousingDataset {
     };
   }
 
-  private _trainFeatures?: number[][];
-  private _trainTarget?: number[][];
-  private _testFeatures?: number[][];
-  private _testTarget?: number[][];
+  get numTrainFeatures() {
+    return this._trainFeatures?.[0].length ?? 0;
+  }
 
+  // Private methods
   private async loadCsv(filename: string) {
     return new Promise<number[][]>((resolve) => {
       const url = `${BASE_URL}${filename}`;

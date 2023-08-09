@@ -58,7 +58,7 @@ export class Tensor {
     return baseline;
   }
 
-  trainModel(
+  public trainModel(
     modelType: ModelType,
     numEpochs: number,
     learningRate: number
@@ -66,28 +66,22 @@ export class Tensor {
     const model = this.getModel(modelType);
 
     for (let epoch = 0; epoch < numEpochs; epoch++) {
-      let totalLoss = 0;
+      const predictions = this.feedForward(
+        model,
+        this._trainFeatures,
+        this._weights,
+        this._bias
+      );
 
-      for (let i = 0; i < this._trainFeatures.length; i++) {
-        const prediction = model(
-          this._trainFeatures[i],
-          this._weights,
-          this._bias,
-          this._numFeatures
-        );
-        const error = this._trainTarget[i][0] - prediction;
-        const newWeights = [...this._weights];
-        for (let j = 0; j < this._numFeatures; j++) {
-          newWeights[j] += learningRate * error * this._trainFeatures[i][j];
-        }
-        this._weights = newWeights;
-        this._bias += learningRate * error;
-
-        totalLoss += error ** 2;
-      }
-
-      const meanLoss = totalLoss / this._trainFeatures.length;
+      const meanLoss = this.calculateLoss(predictions);
       console.log(`Epoch ${epoch + 1}, Mean Loss: ${meanLoss}`);
+
+      this.backPropagation(
+        this._trainFeatures,
+        this._trainTarget,
+        predictions,
+        learningRate
+      );
     }
 
     return { weights: this._weights, bias: this._bias };
@@ -182,5 +176,54 @@ export class Tensor {
 
   private square(data: number[][]): number[][] {
     return data.map((row) => row.map((val) => val * val));
+  }
+
+  private feedForward(
+    model: any,
+    features: number[][],
+    weights: number[],
+    bias: number
+  ): number[] {
+    const predictions: number[] = [];
+
+    for (let i = 0; i < features.length; i++) {
+      const prediction = model(features[i], weights, bias, this._numFeatures);
+      predictions.push(prediction);
+    }
+
+    return predictions;
+  }
+
+  private calculateLoss(predictions: number[]): number {
+    let totalLoss = 0;
+
+    for (let i = 0; i < this._trainFeatures.length; i++) {
+      const error = this._trainTarget[i][0] - predictions[i];
+      totalLoss += error ** 2;
+    }
+
+    return totalLoss / this._trainFeatures.length;
+  }
+
+  private backPropagation(
+    features: number[][],
+    target: number[][],
+    predictions: number[],
+    learningRate: number
+  ): void {
+    const newWeights = [...this._weights];
+    let newBias = this._bias;
+
+    for (let i = 0; i < features.length; i++) {
+      const error = target[i][0] - predictions[i];
+
+      for (let j = 0; j < newWeights.length; j++) {
+        newWeights[j] += learningRate * error * features[i][j];
+      }
+      newBias += learningRate * error;
+    }
+
+    this._weights = newWeights;
+    this._bias = newBias;
   }
 }

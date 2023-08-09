@@ -17,6 +17,14 @@ document.addEventListener(
     console.log(data.dataset.trainFeatures);
     console.log(tensors.trainFeatures);
     console.log(tensors.baseline);
+    const learningRate = 0.001;
+    const numEpochs = 200;
+    const linearRegressionModel = tensors.trainModel(
+      tensors.linearRegressionModel,
+      numEpochs,
+      learningRate
+    );
+    console.log(linearRegressionModel);
   },
   false
 );

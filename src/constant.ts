@@ -32,3 +32,5 @@ export enum ModelType {
   LinearRegressionModel = 1,
   MultiLayerPerceptronModel = 2,
 }
+
+export type ChartDataType = { epoch: number; meanLoss: number };

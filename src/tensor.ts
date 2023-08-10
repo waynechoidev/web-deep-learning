@@ -1,3 +1,4 @@
+import { Graph } from "./graph";
 import { DatasetType, ModelType } from "./constant";
 
 export class Tensor {
@@ -12,9 +13,12 @@ export class Tensor {
   private _hiddenActivations: number[] = [];
   private _bias = 0;
 
-  constructor(modelType: ModelType) {
+  private _graph: Graph;
+
+  constructor(modelType: ModelType, graph: Graph) {
     this._modelType = modelType;
     this._hiddenActivations = new Array(this.HIDDEN_UNITS).fill(0);
+    this._graph = graph;
   }
 
   private HIDDEN_UNITS = 50 as const;
@@ -83,6 +87,7 @@ export class Tensor {
 
       const meanLoss = this.calculateLoss(predictions);
       console.log(`Epoch ${epoch + 1}, Mean Loss: ${meanLoss}`);
+      this._graph.update({ epoch, meanLoss });
 
       this.backPropagation(
         this._trainFeatures,

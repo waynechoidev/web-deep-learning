@@ -173,6 +173,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@npmcli/fs@npm:^3.1.0":
   version: 3.1.0
   resolution: "@npmcli/fs@npm:3.1.0"
@@ -193,6 +200,15 @@ __metadata:
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
   checksum: ad87447820dd3f24825d2d947ebc03072b20a42bfc96cbafec16bff8bbda6c1a81fcb0be56d5b21968560c5359a0af4038a68ba150c3e1694fe4c109a063bed8
+  languageName: node
+  linkType: hard
+
+"@types/chart.js@npm:^2.9.37":
+  version: 2.9.37
+  resolution: "@types/chart.js@npm:2.9.37"
+  dependencies:
+    moment: ^2.10.2
+  checksum: 5626a8cc3b410c9f2668ee7efd5b1b408f7de814608f83f9fdb349f59e3c7f5eb7199e73b41e6634c24b4ccb8d3846b290264df8d4224d184f63b095f82cfb94
   languageName: node
   linkType: hard
 
@@ -339,6 +355,15 @@ __metadata:
     tar: ^6.1.11
     unique-filename: ^3.0.0
   checksum: 385756781e1e21af089160d89d7462b7ed9883c978e848c7075b90b73cb823680e66092d61513050164588387d2ca87dd6d910e28d64bc13a9ac82cd8580c796
+  languageName: node
+  linkType: hard
+
+"chart.js@npm:^4.3.3":
+  version: 4.3.3
+  resolution: "chart.js@npm:4.3.3"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 548605fc0a0a64fdc591a41159a2be86c1b408339d6e57b566c04dc157331b003db285a6139801d1700596acde8f0521bc6a156da29388025581619db6600073
   languageName: node
   linkType: hard
 
@@ -948,6 +973,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"moment@npm:^2.10.2":
+  version: 2.29.4
+  resolution: "moment@npm:2.29.4"
+  checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.1.2":
   version: 2.1.2
   resolution: "ms@npm:2.1.2"
@@ -1400,7 +1432,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "web-deep-learning@workspace:."
   dependencies:
+    "@types/chart.js": ^2.9.37
     "@types/papaparse": ^5.3.7
+    chart.js: ^4.3.3
     papaparse: ^5.4.1
     typescript: ^5.0.2
     vite: ^4.4.5

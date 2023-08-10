@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/chart.js": "^2.9.37",
     "@types/papaparse": "^5.3.7",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
   },
   "dependencies": {
+    "chart.js": "^4.3.3",
     "papaparse": "^5.4.1"
   }
 }

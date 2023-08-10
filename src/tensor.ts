@@ -3,6 +3,9 @@ import { DatasetType, ModelType } from "./constant";
 
 export class Tensor {
   private _modelType: ModelType;
+  private _learningRate: number;
+  private _numEpochs: number;
+  private _graph: Graph;
 
   private _trainFeatures: number[][] = [[]];
   private _trainTarget: number[][] = [[]];
@@ -13,12 +16,18 @@ export class Tensor {
   private _hiddenActivations: number[] = [];
   private _bias = 0;
 
-  private _graph: Graph;
-
-  constructor(modelType: ModelType, graph: Graph) {
+  constructor(
+    modelType: ModelType,
+    learningRate: number,
+    numEpochs: number,
+    graph: Graph
+  ) {
     this._modelType = modelType;
-    this._hiddenActivations = new Array(this.HIDDEN_UNITS).fill(0);
     this._graph = graph;
+    this._learningRate = learningRate;
+    this._numEpochs = numEpochs;
+
+    this._hiddenActivations = new Array(this.HIDDEN_UNITS).fill(0);
   }
 
   private HIDDEN_UNITS = 50 as const;
@@ -71,13 +80,10 @@ export class Tensor {
     return baseline;
   }
 
-  public trainModel(
-    numEpochs: number,
-    learningRate: number
-  ): { weights: number[]; bias: number } {
+  public async trainModel() {
     const model = this.getModel(this._modelType);
 
-    for (let epoch = 0; epoch < numEpochs; epoch++) {
+    for (let epoch = 0; epoch < this._numEpochs; epoch++) {
       const predictions = this.feedForward(
         model,
         this._trainFeatures,
@@ -93,14 +99,12 @@ export class Tensor {
         this._trainFeatures,
         this._trainTarget,
         predictions,
-        learningRate
+        this._learningRate
       );
     }
-
-    return { weights: this._weights, bias: this._bias };
   }
 
-  public testModel() {
+  public async testModel() {
     const model = this.getModel(this._modelType);
 
     const testPredictions = this.feedForward(
@@ -272,7 +276,7 @@ export class Tensor {
     target: number[][],
     predictions: number[],
     learningRate: number
-  ): void {
+  ) {
     const newWeights = [...this._weights];
     let newBias = this._bias;
 

@@ -6,6 +6,7 @@ export class Tensor {
   private _learningRate: number;
   private _numEpochs: number;
   private _graph: Graph;
+  private _id: string;
 
   private _trainFeatures: number[][] = [[]];
   private _trainTarget: number[][] = [[]];
@@ -26,6 +27,8 @@ export class Tensor {
     this._graph = graph;
     this._learningRate = learningRate;
     this._numEpochs = numEpochs;
+    this._id =
+      this._modelType === ModelType.LinearRegressionModel ? "lr" : "mlp";
 
     this._hiddenActivations = new Array(this.HIDDEN_UNITS).fill(0);
   }
@@ -80,8 +83,14 @@ export class Tensor {
     return baseline;
   }
 
-  public async trainModel() {
+  public trainModel() {
     const model = this.getModel(this._modelType);
+
+    const epochUI = document.getElementById(`epoch-${this._id}`);
+    const meanLossUI = document.getElementById(`mean-loss-${this._id}`);
+    (
+      document.getElementById(`train-button-${this._id}`) as HTMLButtonElement
+    ).disabled = true;
 
     let epoch = 0;
     const updateChart = () => {
@@ -94,7 +103,9 @@ export class Tensor {
         );
 
         const meanLoss = this.calculateLoss(predictions);
-        console.log(`Epoch ${epoch + 1}, Mean Loss: ${meanLoss}`);
+        epochUI!.innerHTML = `Epoch: ${epoch} / ${this._numEpochs}`;
+        meanLossUI!.innerHTML = `Mean Loss: ${meanLoss.toFixed(2)}`;
+        // console.log(`Epoch ${epoch + 1}, Mean Loss: ${meanLoss}`);
         this._graph.update({ epoch, meanLoss });
 
         this.backPropagation(
@@ -103,7 +114,16 @@ export class Tensor {
           predictions,
           this._learningRate
         );
-
+        if (epoch === this._numEpochs) {
+          (
+            document.getElementById(
+              `test-button-${this._id}`
+            ) as HTMLButtonElement
+          ).disabled = false;
+          meanLossUI!.innerHTML = `Training Set Final Mean Loss: ${meanLoss.toFixed(
+            2
+          )}`;
+        }
         // Schedule the next update
         requestAnimationFrame(updateChart);
       }
@@ -128,11 +148,16 @@ export class Tensor {
       const target = this._testTarget[index][0];
       const loss = Math.pow(target - pred, 2); // Calculate loss for each prediction
       totalLoss += loss; // Accumulate the losses
-      // console.log(`Target: ${target}, Pred: ${pred}, Loss: ${loss}`);
     });
 
     const meanLoss = totalLoss / testPredictions.length; // Calculate mean loss
-    console.log(`Mean Test Loss: ${meanLoss}`);
+
+    document.getElementById(
+      `test-loss-${this._id}`
+    )!.innerHTML = `Test Set Final Mean Loss: ${meanLoss.toFixed(2)}`;
+    (
+      document.getElementById(`test-button-${this._id}`) as HTMLButtonElement
+    ).disabled = true;
   }
 
   // Models

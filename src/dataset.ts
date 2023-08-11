@@ -17,7 +17,15 @@ export class BostonHousingDataset {
   constructor() {}
 
   async loadData() {
-    console.log(`----- start parsing -----`);
+    const loadProcess = document.getElementById("load-process");
+    const loadButton = document.getElementById(
+      "load-button"
+    ) as HTMLButtonElement;
+    if (!loadProcess) console.error("There is no element to show process");
+
+    loadProcess!.innerHTML = "It is loading now.";
+    loadButton!.disabled = true;
+
     [
       this._trainFeatures,
       this._trainTarget,
@@ -32,7 +40,16 @@ export class BostonHousingDataset {
 
     this.shuffle(this._trainFeatures, this._trainTarget);
     this.shuffle(this._testFeatures, this._testTarget);
-    console.log(`----- parsing has done -----`);
+    if (
+      !!this._testFeatures ||
+      !!this._trainTarget ||
+      !!this._testFeatures ||
+      !!this._testTarget
+    ) {
+      loadProcess!.innerHTML = "It is done!";
+    } else {
+      loadButton!.disabled = false;
+    }
   }
 
   get dataset(): DatasetType {

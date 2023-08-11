@@ -83,25 +83,33 @@ export class Tensor {
   public async trainModel() {
     const model = this.getModel(this._modelType);
 
-    for (let epoch = 0; epoch < this._numEpochs; epoch++) {
-      const predictions = this.feedForward(
-        model,
-        this._trainFeatures,
-        this._weights,
-        this._bias
-      );
+    let epoch = 0;
+    const updateChart = () => {
+      if (epoch++ < this._numEpochs) {
+        const predictions = this.feedForward(
+          model,
+          this._trainFeatures,
+          this._weights,
+          this._bias
+        );
 
-      const meanLoss = this.calculateLoss(predictions);
-      console.log(`Epoch ${epoch + 1}, Mean Loss: ${meanLoss}`);
-      this._graph.update({ epoch, meanLoss });
+        const meanLoss = this.calculateLoss(predictions);
+        console.log(`Epoch ${epoch + 1}, Mean Loss: ${meanLoss}`);
+        this._graph.update({ epoch, meanLoss });
 
-      this.backPropagation(
-        this._trainFeatures,
-        this._trainTarget,
-        predictions,
-        this._learningRate
-      );
-    }
+        this.backPropagation(
+          this._trainFeatures,
+          this._trainTarget,
+          predictions,
+          this._learningRate
+        );
+
+        // Schedule the next update
+        requestAnimationFrame(updateChart);
+      }
+    };
+    // Start the initial update
+    requestAnimationFrame(updateChart);
   }
 
   public async testModel() {

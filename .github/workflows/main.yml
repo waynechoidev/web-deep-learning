@@ -21,12 +21,12 @@ jobs:
         env:
           CI: true
           DEPLOY_TARGET: gh-pages
-      - run: touch dir/.nojekyll
+      - run: touch dist/.nojekyll
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
-          folder: dir
+          folder: dist
           clean: true
